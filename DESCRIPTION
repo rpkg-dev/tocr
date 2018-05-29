@@ -1,0 +1,12 @@
+Package: RmdTOC
+Title: What the Package Does (one line, title case)
+Version: 0.1.0
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends: R (>= 3.4.4)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Author: Salim Brüggemann <salim.b@protonmail.com> [aut, cre]
+URL: http://gitlab.com/salim_b/RmdTOC
+BugReports: http://gitlab.com/salim_b/RmdTOC/issues
