@@ -1,12 +1,19 @@
 Package: RmdTOC
-Title: What the Package Does (one line, title case)
+Title: Add a table of contents (TOC) to an (R) Markdown file
 Version: 0.1.0
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: c(utils::as.person("Salim Brüggemann <salim.b@protonmail.com> [aut, cre]"))
+Description: Provides the ability to automatically add/update/remove a table of contents (TOC) to/from (R) Markdown documents.
 Depends: R (>= 3.4.4)
+Imports:
+    checkmate (>= 1.8.5),
+    curl (>= 3.2),
+    dplyr (>= 0.7.5),
+    magrittr (>= 1.5),
+    RCurl (>= 1.95-4.10),
+    readr (>= 1.1.1),
+    stringr (>= 1.3.1)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Author: Salim Brüggemann <salim.b@protonmail.com> [aut, cre]
 URL: http://gitlab.com/salim_b/RmdTOC
 BugReports: http://gitlab.com/salim_b/RmdTOC/issues
