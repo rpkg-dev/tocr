@@ -1,5 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^Rmd/.*$
 ^Makefile$
 ^README\.Rmd$
 ^TODO\.md$
