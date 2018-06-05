@@ -16,6 +16,9 @@
     - [ ] `handle_existing_toc()` --> TOC comment detection
         - see `/home/salim/Schreibtisch/Markdown TOC - comment format.jpg`
 
+- [ ] Makefile/README.Rmd: instead of downloading the snippets everytime inside the README.Rmd, do it in the Makefile and only redownload if changed
+    - see: <https://unix.stackexchange.com/questions/425297/how-can-i-use-files-from-http-as-prerequisites-in-gnu-make>
+
 ## Bugs
 
 - [ ] remove trailing `#` from header processing (adhere to <try.commonmark.org>)
