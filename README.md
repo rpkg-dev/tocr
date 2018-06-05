@@ -36,7 +36,13 @@ remotes::install_git(url = "http://gitlab.com/salim_b/RmdTOC.git")
 
 ## Development
 
-This package is written using literate programming techniques proposed by [Yihui Xie](https://yihui.name/rlp/). This means all the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from their respective R Markdown counterparts found under [`Rmd/`](Rmd/) as instructed by the [`Makefile`](Makefile). Always make changes to the `.Rmd` files – not the `.R` files – and then run `make && Rscript -e "devtools::install('.', keep_source = TRUE)"` from the root of this repository to regenerate the R source code. Make sure that [`make`](https://de.wikipedia.org/wiki/GNU_Make)[^make-windoof] is available on your system and that the R packages `knitr` and `rmarkdown` are up to date.
+This package is written using literate programming techniques proposed by [Yihui Xie](https://yihui.name/rlp/). This means all the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from their respective R Markdown counterparts found under [`Rmd/`](Rmd/) as instructed by the [`Makefile`](Makefile). Always make changes to the `.Rmd` files – not the `.R` files – and then run the following from the root of this repository to regenerate the R source code, build and install the package:
+
+```
+make && Rscript -e "devtools::install('.', keep_source = TRUE)"
+```
+
+Make sure that [`make`](https://de.wikipedia.org/wiki/GNU_Make)[^make-windoof] is available on your system and that the R packages [`knitr`](https://cran.r-project.org/package=knitr) and [`rmarkdown`](https://cran.r-project.org/package=rmarkdown) are up to date beforehand.
 
 
 [^make-windoof]: On Windows, `make` is included in [Rtools](https://cran.rstudio.com/bin/windows/Rtools/). On macOS, you have to install the [Xcode command line tools](https://stackoverflow.com/a/10301513/7196903).
