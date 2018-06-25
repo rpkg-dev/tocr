@@ -90,12 +90,69 @@ options(digits = 5,
 TODO: use `ensure_package` from supporteR package
 
 ```{r purl = FALSE}
-library("magrittr", "tidyverse")
+library("magrittr")
 ```
 
 ## Define functions
 
 ### Internal/unexported
+
+#### Get non-code-block indices
+
+Regex below tries to adhere to <https://spec.commonmark.org/0.28/#fenced-code-blocks>.
+
+```{r get_non_code_block_indices}
+
+#' Get Non-Code-Block Indices
+#' 
+#' @keywords internal
+get_non_code_block_indices <- function(md_lines)
+{
+  non_code_block_indices <- integer(0)
+  
+  if ( length(md_lines) > 0 )
+  {
+    is_inside_code_block <- FALSE
+    is_tilde <- FALSE
+    nr_of_fence_chars <- 3
+    
+    for ( i in 1:length(md_lines) )
+    {
+      if ( is_inside_code_block )
+      {
+        # clode block ends?
+        if ( stringr::str_detect(string = md_lines[i],
+                                 pattern = paste0("^ {0,3}",
+                                                  dplyr::if_else(condition = is_tilde,
+                                                                 true = "~",
+                                                                 false = "`"),
+                                                  "{", nr_of_fence_chars, ",} *$")) )
+        {
+          is_inside_code_block %<>% not()
+        }
+        
+      } else
+      {
+        # code block starts?
+        if ( stringr::str_detect(string = md_lines[i],
+                                 pattern = "^ {0,3}(`{3,}([^`]*)?|~{3,}([^~]*)?)$") )
+        {
+          is_tilde <- stringr::str_detect(string = md_lines[i],
+                                          pattern = "^ {0,3}~{3,}")
+          nr_of_fence_chars <- stringr::str_count(string = md_lines[i],
+                                                  pattern = dplyr::if_else(condition = is_tilde,
+                                                                           true = "~",
+                                                                           false = "`"))
+        } else
+        {
+          non_code_block_indices %<>% c(i)
+        }
+      }
+    }
+  }
+  return(non_code_block_indices)
+}
+```
 
 #### Handle existing TOC (integrity checks and removal)
 
@@ -107,50 +164,29 @@ Currently supported TOC comment formats:
 - [Markdown TOC](https://github.com/nok/markdown-toc)
 
 ```{r handle_existing_toc}
+
 #' Handle Existing TOC (Integrity Checks and Removal)
 #' 
 #' @keywords internal
 handle_existing_toc <- function(md_lines,
+                                non_code_block_indices,
                                 position,
                                 filename)
 {
   # get begin and end line numbers of possibly existing old TOC
-  toc_begin_position <- integer(0)
-  toc_end_position <- integer(0)
-  
-  if ( length(md_lines) > 0 )
-  {
-    code_chunk <- FALSE
-    
-    for ( i in 1:length(md_lines) )
-    {
-      # skip everything wrapped in code fences
-      if ( stringr::str_detect(string = md_lines[i],
-                               pattern = dplyr::if_else(condition = code_chunk,
-                                                        true = "^ {0,3}`{3,} *$",
-                                                        false = "^ {0,3}`{3,}([^`]*)?$")) )
-      {
-        code_chunk <- !code_chunk
-        
-      } else if ( !code_chunk )
-      {
-        if ( stringr::str_detect(
-          string = md_lines[i],
-          pattern = "(?i)^\\s*<!--\\s*((START\\s+doctoc(\\s.*)?|TOC\\s+((BEGIN|START|depth|withlinks|updateOnSave|orderedList).*)?)|ts)\\s*-->")
-        )
-        {
-          toc_begin_position %<>% c(i)
-          
-        } else if ( stringr::str_detect(
-          string = md_lines[i],
-          pattern = "(?i)^\\s*<!--\\s*((END\\s+doctoc|TOC\\s+END)(\\s.*)?|(te|/TOC))\\s*-->")
-        )
-        {
-          toc_end_position %<>% c(i)
-        }
-      }
-    }
-  }
+  toc_begin_position <-
+    stringr::str_which(
+      string = md_lines,
+      pattern = "(?i)^\\s*<!--\\s*((START\\s+doctoc(\\s.*)?|TOC\\s+((BEGIN|START|depth|withlinks|updateOnSave|orderedList).*)?)|ts)\\s*-->"
+    ) %>%
+    extract(. %in% non_code_block_indices)
+
+  toc_end_position <-
+    stringr::str_which(
+      string = md_lines,
+      pattern = "(?i)^\\s*<!--\\s*((END\\s+doctoc|TOC\\s+END)(\\s.*)?|(te|/TOC))\\s*-->"
+    ) %>%
+    extract(. %in% non_code_block_indices)
   
   # check if an old TOC already exists
   toc_exists <-
@@ -184,13 +220,14 @@ handle_existing_toc <- function(md_lines,
     }
     
     # also include surplus empty lines (in order to get rid of them)
+    ## before TOC
     while ( stringr::str_detect(string = md_lines[max(toc_begin_position - 1, 1)],
                                 pattern = "^\\s*$") &
             toc_begin_position > 1 )
     {
       toc_begin_position %<>% subtract(1)
     }
-    
+    ## after TOC
     while ( stringr::str_detect(string = md_lines[min(toc_end_position + 1, length(md_lines))],
                                 pattern = "^\\s*$") &
             toc_end_position < length(md_lines) )
@@ -226,17 +263,28 @@ handle_existing_toc <- function(md_lines,
     }
   } else position_offset <- 0
   
+  # adapt non-code-block indices
+  if ( toc_exists )
+  {
+    ## remove TOC indices
+    non_code_block_indices %<>% setdiff(y = toc_begin_position:toc_end_position)
+    ## consider position offset
+    non_code_block_indices[non_code_block_indices > toc_end_position] %<>%
+      subtract(toc_end_position - toc_begin_position)
+  }
+  
   return(
     list(md_lines = md_lines,
-         position_offset = position_offset)
+         position_offset = position_offset,
+         non_code_block_indices = non_code_block_indices)
   )
 }
-
 ```
 
 #### Evaluate `position`
 
 ```{r evaluate_position}
+
 #' Evaluate `position`
 #' 
 #' @keywords internal
@@ -315,7 +363,6 @@ evaluate_position <- function(position,
   
   return(position)
 }
-
 ```
 
 #### Convert header text to HTML anchor
@@ -325,6 +372,7 @@ evaluate_position <- function(position,
 - See <https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/user/markdown.md#header-ids-and-links> for GitLab specific ID generation.
 
 ```{r convert_header_to_anchor}
+
 #' Convert Header Text to HTML Anchor
 #' 
 #' @keywords internal
@@ -439,17 +487,19 @@ convert_header_to_anchor <- function(header_text,
   
   return(anchor_link)
 }
-
 ```
 
 #### Process Markdown document line by line (clean it and build new TOC entries)
 
 ```{r process_md}
+
 #' Process Markdown Document Line by Line (Clean It and Build New TOC Entries)
 #' 
 #' @keywords internal
 process_md <- function(md_lines,
+                       non_code_block_indices,
                        min_tier,
+                       max_tier,
                        markdown_flavor,
                        add_backlinks,
                        backlink_strings,
@@ -467,153 +517,141 @@ process_md <- function(md_lines,
                                 header_text = character(0),
                                 anchor_link = character(0))
   anchor_links <- character(0)
-  code_chunk <- FALSE
   enumeration <- 1
   previous_tier <- 0
   
-  if ( length(md_lines) > 0 )
+  for ( i in non_code_block_indices )
   {
-    for ( i in 1:length(md_lines) )
+    # COMMENTED OUT because neither GitHub nor GitLab do cross-check for duplicates in manually set HTML <id> attributes
+    #   # add manually set HTML <id> attributes to `anchor_links`
+    #   # GitLab quirk: GitLab currently ignores manually set HTML <id> attributes
+    # } else if ( markdown_flavor != "gitlab" &
+    #             stringr::str_detect(string = md_lines[i],
+    #                        pattern = "<[^>]*?id *?= *?['|\"][^'\"]+?['|\"][^<]*?>") )
+    # {
+    #   # TODO: multiple id tags on the same line? id tag set in a header line?
+    #   anchor_links <-
+    #     stringr::str_replace_all(string = md_lines[i],
+    #                     pattern = "^(?:.*?)(?:<[^>]*?id *?= *?['|\"])([^'\"]+?)(?:['|\"][^<]*?>)(?:.*?)$",
+    #                     replacement = "\\1") %>%
+    #     # COMMENTED OUT because GitHub/Lab currently don't check for duplicates in manually set HTML <id> attributes
+    #     # convert_header_to_anchor(markdown_flavor = markdown_flavor,
+    #     #                          preceding_anchor_links = anchor_links,
+    #                                backlink_position = backlink_position) %>%
+    #     c(anchor_links, .)
+    
+    # skip non-header lines
+    if ( stringr::str_detect(string = md_lines[i],
+                             pattern = "^ {0,3}#{1,6}\\s+\\S") )
     {
-      # skip everything wrapped in code fences
+      # remove possibly existing backlinks
+      md_lines[i] %<>%
+        # remove all links to any defined id
+        stringr::str_replace_all(pattern = stringr::str_c("\\[[^\\]]*?\\]\\(#(",
+                                                          toc_id, "|",
+                                                          old_toc_id,
+                                                          dplyr::if_else(condition = is_header_title,
+                                                                         true = "",
+                                                                         false = stringr::str_c("|", new_toc_id)),
+                                                          ")-*?\\) ?"),
+                                 replacement = "") %>%
+        # remove all anchor links where the link text is no longer than 2 chars
+        stringr::str_replace_all(pattern = stringr::str_c("\\[[^\\]]{0,2}?\\]\\(#[^\\)]*?\\) ?"),
+                                 replacement = "") %>%
+        # remove trailing whitespaces
+        stringr::str_trim(side = "right")
+      
+      # determine backlink string dynamically based on backlink target's position, so that it always points to the TOC
+      backlink_string <- backlink_strings[1]
+      
+      if ( length(backlink_strings) > 1 &
+           i < new_toc_id_position )
+      {
+        backlink_string <- backlink_strings[2]
+      }
+      
+      # extract header text
+      header_text <-
+        md_lines[i] %>%
+        # remove leading hashtags
+        stringr::str_replace(pattern = "^ *#+",
+                             replacement = "") %>%
+        # remove leading and trailing whitespaces
+        stringr::str_trim(side = "both") %>%
+        # replace markdown links by link text
+        stringr::str_replace_all(pattern = "\\[([^\\]]*?)\\]\\([^\\)]*?\\)",
+                                 replacement = "\\1")
+      
+      # update list of TOC anchor links
+      anchor_links <-
+        convert_header_to_anchor(
+          header_text = header_text,
+          markdown_flavor = markdown_flavor,
+          preceding_anchor_links = anchor_links,
+          backlink_string = ifelse(test =
+                                     add_backlinks &
+                                     stringr::str_detect(string = md_lines[i],
+                                                         pattern = stringr::str_c("^ {0,3}#{", min_tier, ",", max_tier, "}\\s+\\S")),
+                                   yes =
+                                     backlink_string,
+                                   no =
+                                     character(0)),
+          backlink_position = backlink_position
+        ) %>%
+        c(anchor_links, .)
+      
+      # add header to TOC if of tier `min_tier` and `max_tier`
       if ( stringr::str_detect(string = md_lines[i],
-                               pattern = dplyr::if_else(condition = code_chunk,
-                                                        true = "^ {0,3}`{3,} *$",
-                                                        false = "^ {0,3}`{3,}([^`]*)?$")) )
+                               pattern = stringr::str_c("^ {0,3}#{", min_tier, ",", max_tier, "}\\s+\\S")) )
       {
-        code_chunk <- !code_chunk
-        
-        # COMMENTED OUT because neither GitHub nor GitLab do cross-check for duplicates in manually set HTML <id> attributes
-        #   # add manually set HTML <id> attributes to `anchor_links`
-        #   # GitLab quirk: GitLab currently ignores manually set HTML <id> attributes
-        # } else if ( !code_chunk &
-        #             markdown_flavor != "gitlab" &
-        #             stringr::str_detect(string = md_lines[i],
-        #                        pattern = "<[^>]*?id *?= *?['|\"][^'\"]+?['|\"][^<]*?>") )
-        # {
-        #   # TODO: multiple id tags on the same line? id tag set in a header line?
-        #   anchor_links <-
-        #     stringr::str_replace_all(string = md_lines[i],
-        #                     pattern = "^(?:.*?)(?:<[^>]*?id *?= *?['|\"])([^'\"]+?)(?:['|\"][^<]*?>)(?:.*?)$",
-        #                     replacement = "\\1") %>%
-        #     # COMMENTED OUT because GitHub/Lab currently don't check for duplicates in manually set HTML <id> attributes
-        #     # convert_header_to_anchor(markdown_flavor = markdown_flavor,
-        #     #                          preceding_anchor_links = anchor_links,
-        #                                backlink_position = backlink_position) %>%
-        #     c(anchor_links, .)
-        
-        # detect header lines, else skip
-      } else if ( !code_chunk &
-                  stringr::str_detect(string = md_lines[i],
-                                      pattern = "^ {0,3}#{1,6}\\s+\\S") )
-      {
-        # remove possibly existing backlinks
-        md_lines[i] %<>%
-          # remove all links to any defined id
-          stringr::str_replace_all(pattern = stringr::str_c("\\[[^\\]]*?\\]\\(#(",
-                                                            toc_id, "|",
-                                                            old_toc_id,
-                                                            dplyr::if_else(condition = is_header_title,
-                                                                           true = "",
-                                                                           false = stringr::str_c("|", new_toc_id)),
-                                                            ")-*?\\) ?"),
-                                   replacement = "") %>%
-          # remove all anchor links where the link text is no longer than 2 chars
-          stringr::str_replace_all(pattern = stringr::str_c("\\[[^\\]]{0,2}?\\]\\(#[^\\)]*?\\) ?"),
-                                   replacement = "") %>%
-          # remove trailing whitespaces
-          stringr::str_trim(side = "right")
-        
-        # determine backlink string dynamically based on backlink target's position, so that it always points to the TOC
-        backlink_string <- backlink_strings[1]
-        
-        if ( length(backlink_strings) > 1 &
-             i < new_toc_id_position )
-        {
-          backlink_string <- backlink_strings[2]
-        }
-        
-        # extract header text
-        header_text <-
+        # calculate tier of TOC entry
+        tier <-
           md_lines[i] %>%
-          # remove leading hashtags
-          stringr::str_replace(pattern = "^ *#+",
-                               replacement = "") %>%
-          # remove leading and trailing whitespaces
-          stringr::str_trim(side = "both") %>%
-          # replace markdown links by link text
-          stringr::str_replace_all(pattern = "\\[([^\\]]*?)\\]\\([^\\)]*?\\)",
-                                   replacement = "\\1")
+          stringr::str_extract(pattern = "^ {0,3}#+") %>%
+          stringr::str_count(pattern = "#") %>%
+          subtract(min_tier - 1)
         
-        # update list of TOC anchor links
-        anchor_links <-
-          convert_header_to_anchor(header_text = header_text,
-                                   markdown_flavor = markdown_flavor,
-                                   preceding_anchor_links = anchor_links,
-                                   backlink_string = ifelse(test =
-                                                              add_backlinks &
-                                                              stringr::str_detect(string = md_lines[i],
-                                                                                  pattern = stringr::str_c("^ {0,3}#{", min_tier, ",6}\\s+\\S")),
-                                                            yes =
-                                                              backlink_string,
-                                                            no =
-                                                              character(0)),
-                                   backlink_position = backlink_position) %>%
-          c(anchor_links, .)
+        # update enumeration for ordered list TOC
+        enumeration <- dplyr::if_else(condition = tier == previous_tier,
+                                      true = enumeration + 1,
+                                      false = 1)
         
-        # add header to TOC if of tier `min_tier` or lower
-        if ( stringr::str_detect(string = md_lines[i],
-                                 pattern = stringr::str_c("^ {0,3}#{", min_tier, ",6}\\s+\\S")) )
+        # update TOC data
+        toc_data %<>% dplyr::add_row(tier = tier,
+                                     enumeration = enumeration,
+                                     header_text = header_text,
+                                     anchor_link = dplyr::last(anchor_links))
+        
+        # add link back to TOC (if header isn't backlink target)
+        if ( add_backlinks &
+             !(use_fallback & i == new_toc_id_position) )
         {
-          # calculate tier of TOC entry
-          tier <-
+          # split hashtags from rest of header
+          header_split <-
             md_lines[i] %>%
-            stringr::str_extract(pattern = "^ {0,3}#+") %>%
-            stringr::str_count(pattern = "#") %>%
-            subtract(min_tier - 1)
+            stringr::str_split(pattern = "(?<=#{1,6} )",
+                               n = 2) %>%
+            dplyr::first()
           
-          # update enumeration for ordered list TOC
-          enumeration <- dplyr::if_else(condition = tier == previous_tier,
-                                        true = enumeration + 1,
-                                        false = 1)
-          
-          # update TOC data
-          toc_data %<>% dplyr::add_row(tier = tier,
-                                       enumeration = enumeration,
-                                       header_text = header_text,
-                                       anchor_link = dplyr::last(anchor_links))
-          
-          # add link back to TOC (if header isn't backlink target)
-          if ( add_backlinks &
-               !(use_fallback & i == new_toc_id_position) )
+          # add backlink depending on `backlink_position`
+          if ( backlink_position == "after" )
           {
-            # split hashtags from rest of header
-            header_split <-
-              md_lines[i] %>%
-              stringr::str_split(pattern = "(?<=#{1,6} )",
-                                 n = 2) %>%
-              dplyr::first()
+            header_split[2] %<>%
+              stringr::str_trim(side = "right") %>%
+              stringr::str_c(" [", backlink_string, "](#", new_toc_id, ")")
             
-            # add backlink depending on `backlink_position`
-            if ( backlink_position == "after" )
-            {
-              header_split[2] %<>%
-                stringr::str_trim(side = "right") %>%
-                stringr::str_c(" [", backlink_string, "](#", new_toc_id, ")")
-              
-            } else
-            {
-              header_split[2] %<>%
-                stringr::str_c("[", backlink_string, "](#", new_toc_id, ") ", .)
-            }
-            
-            # put header pieces back together
-            md_lines[i] <- stringr::str_c(header_split, collapse = "")
+          } else
+          {
+            header_split[2] %<>%
+              stringr::str_c("[", backlink_string, "](#", new_toc_id, ") ", .)
           }
           
-          # update previous tier
-          previous_tier <- tier
+          # put header pieces back together
+          md_lines[i] <- stringr::str_c(header_split, collapse = "")
         }
+        
+        # update previous tier
+        previous_tier <- tier
       }
     }
   }
@@ -624,7 +662,6 @@ process_md <- function(md_lines,
     )
   )
 }
-
 ```
 
 ### External/exported
@@ -638,6 +675,7 @@ process_md <- function(md_lines,
 - Regarding @param `add_title`: A possible alternative solution to still be able to add backlinks by using style attribute `"display:none;"` for the title doesn't seem to work, at least not on GitHub (it's still visible)).
 
 ```{r add_toc}
+
 #' Add a Table of Contents (TOC) to an (R) Markdown File
 #' 
 #' DESCRIPTION Blabla...
@@ -648,7 +686,11 @@ process_md <- function(md_lines,
 #'   URL or a character vector (one string per line).
 #' @param min_tier Minimum tier of headers (`<h1>` – `<h6>`) to include in the
 #'   TOC. Integer between `1` and `6`. `min_tier = 2` for example means to
-#'   create TOC entries for all `<h2>` – `<h6>` headers.
+#'   create TOC entries for all `<h2>` and below headers.
+#' @param max_tier Maximum tier of headers (`<h1>` – `<h6>`) to include in the
+#'   TOC. Integer between `1` and `6`. `max_tier = 5` for example means to
+#'   create TOC entries for all headers down to `<h5>`.
+#'   `max_tier` must be >= `min_tier`.
 #' @param position Position in Markdown file at which to add the TOC.
 #'   Possible values are:
 #'   - `"top"` (first line)
@@ -715,6 +757,7 @@ process_md <- function(md_lines,
 add_toc <- function(
   md,
   min_tier = 2,
+  max_tier = 6,
   position = "above",
   markdown_flavor = "github",
   add_title = TRUE,
@@ -851,6 +894,18 @@ add_toc <- function(
          call. = FALSE)
   }
   
+  ## `max_tier`
+  test_result <- checkmate::check_int(x = max_tier,
+                                      lower = min_tier,
+                                      upper = 6)
+  
+  if ( !isTRUE(test_result) )
+  {
+    stop("\nInvalid argument provided: max_tier\n",
+         test_result,
+         call. = FALSE)
+  }
+  
   ## `markdown_flavor`
   test_result <- checkmate::check_choice(x = markdown_flavor,
                                          choices = c("github", "gitlab"))
@@ -909,8 +964,12 @@ add_toc <- function(
     
   } else md_lines <- md
   
+  # find code blocks
+  non_code_block_indices <- get_non_code_block_indices(md_lines = md_lines)
+  
   # handle existing TOC (check integrity, remove it if present and adjust position)
   result <- handle_existing_toc(md_lines = md_lines,
+                                non_code_block_indices = non_code_block_indices,
                                 position = position,
                                 filename = ifelse(test = isTRUE(test_file),
                                                   yes = basename(md),
@@ -918,6 +977,7 @@ add_toc <- function(
   
   md_lines <- result[["md_lines"]]
   position_offset <- result[["position_offset"]]
+  non_code_block_indices <- result[["non_code_block_indices"]]
   
   # evaluate position (get actual line number)
   position %<>% evaluate_position(position_offset = position_offset,
@@ -1025,15 +1085,16 @@ add_toc <- function(
   
   # avoid addition of backlinks if impossible or `position = "none"`
   # GitLab quirk: note that GitLab currently ignores the HTML <id> attribute added to a non-header TOC title
-  if ( position == -1 |
-       (!add_title | markdown_flavor == "gitlab") & fallback_id_position == -1 )
+  if ( new_toc_id_position == -1 )
   {
     add_backlinks <- FALSE
   }
   
   # clean `md` from existing backlinks, add new backlinks and build new TOC)
   result <- process_md(md_lines = md_lines,
+                       non_code_block_indices = non_code_block_indices,
                        min_tier = min_tier,
+                       max_tier = max_tier,
                        markdown_flavor = markdown_flavor,
                        add_backlinks = add_backlinks,
                        backlink_strings = backlink_strings,
@@ -1054,7 +1115,6 @@ add_toc <- function(
     # assemble final TOC
     toc <- character(0)
     
-    
     ## determine if TOC entries have to be moved up in listing hierarchy
     ## (this is the case when only headers < `min_tier` are contained in md document)
     toc_tier_offset <- min(toc_data$tier) - 1
@@ -1063,7 +1123,7 @@ add_toc <- function(
     ## (not the case when 1st TOC entry is not of minimum tier)
     is_TOC_list_possible <- toc_data$tier[1] == min(toc_data$tier)
     
-    ## ... and use WORKAROUND if necessary
+    ## ... and use a WORKAROUND if necessary
     if ( !is_TOC_list_possible
          & listing_style != "indented" )
     {
@@ -1196,18 +1256,18 @@ add_toc <- function(
     
   } else
   {
-    message("\nNo header entries found below `min_tier` (<h", min_tier, ">) in '", basename(md), "'! Nothing done.\n")
+    message("\nNo header entries of `min_tier` (<h", min_tier, ">) or below found in '", basename(md), "'! Nothing done.\n")
     md_lines_new <- md_lines
   }
   
   return(md_lines_new)
 }
-
 ```
 
 #### remove_toc
 
 ```{r remove_toc}
+
 #' Remove an Auto-Generated Table of Contents (TOC) from an (R) Markdown File
 #' 
 #' DESCRIPTION Blabla...
@@ -1239,7 +1299,6 @@ remove_toc <- function(md,
             old_toc_id = old_toc_id)
   )
 }
-
 ```
 
 ## Debugging stuff
@@ -1249,10 +1308,11 @@ remove_toc <- function(md,
 ```{r purl = FALSE}
 md = "https://raw.githubusercontent.com/rstudio/rmarkdown/master/README.md"
 min_tier = 2
+max_tier = 6
 position = "above"
-markdown_flavor = "gitlab"
+markdown_flavor = "github"
 add_title = TRUE
-title = "Inhaltsverzeichnis"
+title = "Table of contents"
 title_tier = min_tier
 add_backlinks = add_title
 backlink_strings = c("\U1F805", "\U1F807")
