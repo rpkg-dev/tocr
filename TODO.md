@@ -33,6 +33,8 @@
 
 ## Features
 
+- [ ] re-export magrittr's piping operators and update examples and intro vignette
+
 - [ ] add `position = "existing"` and make it the default (maybe in combo with `"above"`, i.e. `position = c("existing", "above)`)
     This should just place the TOC at the exact same position as an already existing TOC.
 
