@@ -12,7 +12,7 @@
 
 - [ ] set up some tests!
     - [ ] separate md documents for every feature without and with TOC --> running them through `add_toc()` needs to produce identical results!
-    - [ ] huge mega md document to without and with TOC --> running it through `add_toc()` needs to produce an identical result!
+    - [ ] huge mega md document without and with TOC --> running it through `add_toc()` needs to produce an identical result!
     - [ ] `handle_existing_toc()` --> TOC comment detection
         - see `/home/salim/Schreibtisch/Markdown TOC - comment format.jpg`
 
@@ -21,7 +21,7 @@
 
 ## Bugs
 
-- [ ] remove trailing `#` from header processing (adhere to <try.commonmark.org>)
+- [ ] fix handling of trailing `#` in header processing (adhere to <try.commonmark.org>)
 
 - [ ] duplicated h1-header (generell strange), wenn `position` > 7 und < 27:
 
@@ -33,16 +33,20 @@
 
 ## Features
 
+- [ ] add `position = "existing"` and make it the default (maybe in combo with `"above"`, i.e. `position = c("existing", "above)`)
+    This should just place the TOC at the exact same position as an already existing TOC.
+
 - [ ] add support for `markdown_flavor="pandoc"`, see <http://pandoc.org/MANUAL.html#header-identifiers>
 
 - [ ] add support for setext style headers if possible, see <http://pandoc.org/MANUAL.html#headers>
 
 - [ ] scan `md` for R Markdown YAML header containing `toc: true` and print a warning about possibility of TOC duplication
 
-- [ ] performance: scan `md` only once for code block positions --> separate function
-    - question: should consistency be checked? yes, but after scanning! (should be strictly alternating!)
+- [x] performance: scan `md` only once for code block positions --> separate function
 
-- [ ] better backlink removal: scan file for anchor links contained in multiple headers -> remove the most frequent one (if link text length == 1)
+- [ ] make it impossible to insert TOC in between code blocks (otherwise it won't get removed anymore in subsequent runs of `add_toc()`; besides it wouldn't make sense anyway)
+
+- [ ] better backlink removal: scan file for anchor links contained in multiple headers -> remove the most frequent one (if link text length == 1 or so)
 
 ## to add a TOC
 
