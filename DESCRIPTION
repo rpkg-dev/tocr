@@ -1,14 +1,15 @@
 Package: RmdTOC
-Title: Add a table of contents (TOC) to an (R) Markdown file
+Title: TOC Generation for (R) Markdown Documents
 Version: 0.1.0
 Authors@R: c(utils::as.person("Salim Brüggemann <salim.b@protonmail.com> [aut, cre]"))
-Description: Provides the ability to automatically add/update/remove table of contents (TOC) to/from (R) Markdown documents.
-Depends: R (>= 3.4.4)
+Description: Add/update/remove a table of contents (TOC) to/from an (R) Markdown document.
+Depends:
+    R (>= 3.4.4),
+    magrittr (>= 1.5)
 Imports:
     checkmate (>= 1.8.5),
     curl (>= 3.2),
     dplyr (>= 0.7.5),
-    magrittr (>= 1.5),
     RCurl (>= 1.95-4.10),
     readr (>= 1.1.1),
     stringr (>= 1.3.1)
