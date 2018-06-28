@@ -21,7 +21,7 @@ RmdTOC is an R package that allows to automatically add a table of contents (TOC
 
 ## Details
 
-RmdTOC uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_comment.asp) to mark the begin and end of an auto-generated TOC:
+RmdTOC uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_comment.asp) to mark the beginning and end of an auto-generated TOC:
 
 ```html
 <!-- TOC BEGIN -- leave this comment untouched to allow auto update -->
@@ -43,5 +43,5 @@ RmdTOC's `add_toc()` supports the comment format of other similar software like 
 
 ## See also
 
-- [doctoc](https://github.com/thlorenz/doctoc) for a similar solution to add TOCs to Markdown documents implemented in Javascript. It served as some sort of inspiration for this R package.
+- [doctoc](https://github.com/thlorenz/doctoc) for a similar solution to add TOCs to Markdown documents implemented in Javascript. It served as some sort of inspiration for RmdTOC.
 - [Markdown TOC](https://github.com/nok/markdown-toc) for an [Atom](https://atom.io/) package that auto-generates TOCs.

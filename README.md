@@ -8,7 +8,7 @@ RmdTOC is an R package that allows to automatically add a table of contents (TOC
 
 ## Details
 
-RmdTOC uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_comment.asp) to mark the begin and end of an auto-generated TOC:
+RmdTOC uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_comment.asp) to mark the beginning and end of an auto-generated TOC:
 
 ```html
 <!-- TOC BEGIN -- leave this comment untouched to allow auto update -->
@@ -30,15 +30,14 @@ if ( !("remotes" %in% rownames(installed.packages())) )
   install.packages(pkgs = "remotes",
                    repos = "https://cloud.r-project.org/")
 }
-
 remotes::install_git(url = "http://gitlab.com/salim_b/RmdTOC.git")
 ```
 
 ## Development
 
-This package is written using literate programming techniques proposed by [Yihui Xie](https://yihui.name/rlp/). This means all the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from their respective R Markdown counterparts found under [`Rmd/`](Rmd/) as instructed by the [`Makefile`](Makefile). Always make changes to the `.Rmd` files – not the `.R` files – and then run the following from the root of this repository to regenerate the R source code, build and install the package:
+This package is written using literate programming techniques proposed by [Yihui Xie](https://yihui.name/rlp/). This means all the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from their respective R Markdown counterparts found under [`Rmd/`](Rmd/) as instructed by the [`Makefile`](Makefile). Always make changes to the `.Rmd` files – not the `.R` files – and then run the following from the root of this repository to regenerate the R source code and build and install the package:
 
-```
+```sh
 make && Rscript -e "devtools::install('.', keep_source = TRUE)"
 ```
 
@@ -50,5 +49,5 @@ Make sure that [`make`](https://de.wikipedia.org/wiki/GNU_Make)[^make-windoof] i
 
 ## See also
 
-- [doctoc](https://github.com/thlorenz/doctoc) for a similar solution to add TOCs to Markdown documents implemented in Javascript. It served as some sort of inspiration for this R package.
+- [doctoc](https://github.com/thlorenz/doctoc) for a similar solution to add TOCs to Markdown documents implemented in Javascript. It served as some sort of inspiration for RmdTOC.
 - [Markdown TOC](https://github.com/nok/markdown-toc) for an [Atom](https://atom.io/) package that auto-generates TOCs.
