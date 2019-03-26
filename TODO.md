@@ -2,7 +2,7 @@
 
 ## stuff to finish
 
-- [ ] rename package to `tocr`
+- [x] rename package to `tocr`
     - minor issue: there's another R package named [tocR](https://github.com/sambold/tocR/) to crawl TOR sites (not on CRAN) -> ideally its author would rename it to `torc`!
 
 - [ ] remove Markdown footnotes from TOC entries; example: <https://gitlab.com/c2d-zda/i_voting_dataset/blob/master/ANALYSIS.md>

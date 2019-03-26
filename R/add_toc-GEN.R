@@ -52,6 +52,7 @@ get_non_code_block_indices <- function(md_lines)
   return(non_code_block_indices)
 }
 
+
 #' Handle Existing TOC (Integrity Checks and Removal)
 #' 
 #' @keywords internal
@@ -167,6 +168,7 @@ handle_existing_toc <- function(md_lines,
   )
 }
 
+
 #' Evaluate `position`
 #' 
 #' @keywords internal
@@ -245,6 +247,7 @@ evaluate_position <- function(position,
   
   return(position)
 }
+
 
 #' Convert Header Text to HTML Anchor
 #' 
@@ -360,6 +363,7 @@ convert_header_to_anchor <- function(header_text,
   
   return(anchor_link)
 }
+
 
 #' Process Markdown Document Line by Line (Clean It and Build New TOC Entries)
 #' 
@@ -530,6 +534,7 @@ process_md <- function(md_lines,
     )
   )
 }
+
 
 #' Add a Table of Contents (TOC) to an (R) Markdown File
 #' 
@@ -1117,6 +1122,7 @@ add_toc <- function(
   
   return(md_lines_new)
 }
+
 
 #' Remove an Auto-Generated Table of Contents (TOC) from an (R) Markdown File
 #' 

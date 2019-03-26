@@ -14,7 +14,7 @@ editor_options:
 
 ### Clear workspace
 
-```{r cleanup, comment = "#>", purl = FALSE}
+```{r, cleanup, comment = "#>", purl = FALSE}
 # clear global environment
 remove(list = ls(all.names = TRUE))
 
@@ -56,7 +56,7 @@ detach_all_packages <- function(verbose = FALSE)
 detach_all_packages()
 ```
 
-```{r close_connections, comment = "#>", purl = FALSE}
+```{r, close-connections, comment = "#>", purl = FALSE}
 # close all open connections
 closeAllConnections()
 ```
@@ -65,10 +65,10 @@ closeAllConnections()
 
 For every user running this script an appropriate line defining the desired working directory should be added below.
 
-```{r setup, comment = "#>", purl = FALSE}
+```{r, setup, comment = "#>", purl = FALSE}
 # set working directory dependent on username
 path_to_wd <- switch(EXPR = Sys.info()[["user"]],
-                     "salim" = "~/Code/Eigene Projekte/salim_b/RmdTOC",
+                     "salim" = "~/Code/Eigene Projekte/salim_b/tocr",
                      NULL)
 
 if ( is.null(path_to_wd) )
@@ -89,7 +89,7 @@ options(digits = 5,
 
 TODO: use `ensure_package` from supporteR package
 
-```{r purl = FALSE}
+```{r, load-packages, purl = FALSE}
 library("magrittr")
 ```
 
@@ -101,7 +101,7 @@ library("magrittr")
 
 Regex below tries to adhere to <https://spec.commonmark.org/0.28/#fenced-code-blocks>.
 
-```{r get_non_code_block_indices}
+```{r, get-non-code-block-indices}
 
 #' Get Non-Code-Block Indices
 #' 
@@ -158,12 +158,12 @@ get_non_code_block_indices <- function(md_lines)
 
 Currently supported TOC comment formats:
 
-- RmdTOC (of course)
+- tocr (of course)
 - [doctoc](https://github.com/thlorenz/doctoc)
 - [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 - [Markdown TOC](https://github.com/nok/markdown-toc)
 
-```{r handle_existing_toc}
+```{r, handle-existing-toc}
 
 #' Handle Existing TOC (Integrity Checks and Removal)
 #' 
@@ -283,7 +283,7 @@ handle_existing_toc <- function(md_lines,
 
 #### Evaluate `position`
 
-```{r evaluate_position}
+```{r, evaluate-position}
 
 #' Evaluate `position`
 #' 
@@ -371,7 +371,7 @@ evaluate_position <- function(position,
 - Make sure to remove unwanted leading and trailing whitespaces from argument `header_text` before feeding it to this function.
 - See <https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/user/markdown.md#header-ids-and-links> for GitLab specific ID generation.
 
-```{r convert_header_to_anchor}
+```{r, convert-header-to-anchor}
 
 #' Convert Header Text to HTML Anchor
 #' 
@@ -491,7 +491,7 @@ convert_header_to_anchor <- function(header_text,
 
 #### Process Markdown document line by line (clean it and build new TOC entries)
 
-```{r process_md}
+```{r, process-md}
 
 #' Process Markdown Document Line by Line (Clean It and Build New TOC Entries)
 #' 
@@ -674,7 +674,7 @@ process_md <- function(md_lines,
 
 - Regarding @param `add_title`: A possible alternative solution to still be able to add backlinks by using style attribute `"display:none;"` for the title doesn't seem to work, at least not on GitHub (it's still visible)).
 
-```{r add_toc}
+```{r, add-toc}
 
 #' Add a Table of Contents (TOC) to an (R) Markdown File
 #' 
@@ -1266,7 +1266,7 @@ add_toc <- function(
 
 #### remove_toc
 
-```{r remove_toc}
+```{r, remove-toc}
 
 #' Remove an Auto-Generated Table of Contents (TOC) from an (R) Markdown File
 #' 
@@ -1305,7 +1305,7 @@ remove_toc <- function(md,
 
 ### Initialize all parameters of function `add_toc()` with default/dummy params
 
-```{r purl = FALSE}
+```{r, purl = FALSE}
 md = "https://raw.githubusercontent.com/rstudio/rmarkdown/master/README.md"
 min_tier = 2
 max_tier = 6

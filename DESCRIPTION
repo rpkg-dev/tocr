@@ -1,4 +1,4 @@
-Package: RmdTOC
+Package: tocr
 Title: TOC Generation for (R) Markdown Documents
 Version: 0.1.0
 Authors@R: c(utils::as.person("Salim Brüggemann <salim.b@protonmail.com> [aut, cre]"))
@@ -16,8 +16,8 @@ Imports:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-URL: http://gitlab.com/salim_b/RmdTOC
-BugReports: http://gitlab.com/salim_b/RmdTOC/issues
+URL: http://gitlab.com/salim_b/tocr
+BugReports: http://gitlab.com/salim_b/tocr/issues
 Roxygen: list(markdown = TRUE)
 Suggests:
     knitr,
