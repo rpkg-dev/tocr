@@ -2,6 +2,11 @@
 
 ## stuff to finish
 
+- [ ] rename package to `tocr`
+    - minor issue: there's another R package named [tocR](https://github.com/sambold/tocR/) to crawl TOR sites (not on CRAN) -> ideally its author would rename it to `torc`!
+
+- [ ] remove Markdown footnotes from TOC entries; example: <https://gitlab.com/c2d-zda/i_voting_dataset/blob/master/ANALYSIS.md>
+
 - [ ] finish intro-Vignette
 
 - [ ] `add_toc()`: add description line and details (i.a. link to intro-Vignette)
@@ -12,7 +17,7 @@
 
 - [ ] set up some tests!
     - [ ] separate md documents for every feature without and with TOC --> running them through `add_toc()` needs to produce identical results!
-    - [ ] huge mega md document without and with TOC --> running it through `add_toc()` needs to produce an identical result!
+    - [ ] huge mega md document (or several of them) without and with TOC --> running it through `add_toc()` needs to produce an identical result!
     - [ ] `handle_existing_toc()` --> TOC comment detection
         - see `/home/salim/Schreibtisch/Markdown TOC - comment format.jpg`
 
@@ -50,7 +55,25 @@
 
 - [ ] better backlink removal: scan file for anchor links contained in multiple headers -> remove the most frequent one (if link text length == 1 or so)
 
+- [ ] add yet another TOC listing mode: ordered with auto-numbering of headers (vgl. <https://raw.githubusercontent.com/xbmc/xbmc/be9a679876c603fab82a19c565d5a187ca1b5910/docs/GIT-FU.md>)
+
+- [ ] add option to format TOC entries bold and/or italic down to TOC level # (default: 1st level)
+
+- [ ] add option to set number of spaces for markdown indentation (maybe only a binary option à la `indent_by_4_spaces` to use four spaces instead of two)
+
+- [ ] add options to set number of newlines above and below TOC comments
+
+- [ ] make the package's functionality somehow available as a webservice!
+
+
 ## to add a TOC
 
 - [broom](https://github.com/tidyverse/broom)
+- [youtube-dl](https://github.com/rg3/youtube-dl/)
+
+
+## to spread package
+
+- <https://github.com/rstudio/blogdown/issues/267>
+
 
