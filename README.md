@@ -18,7 +18,7 @@ tocr uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_c
 <!-- TOC END -- leave this comment untouched to allow auto update -->
 ```
 
-tocr's `add_toc()` supports the comment format of other similar software like [doctoc](https://github.com/thlorenz/doctoc). If you stumble upon software-generated Markdown TOCs which aren't recognized by `add_toc()`, feel free to [file an issue](http://gitlab.com/salim_b/tocr/issues) or even add support for it on your own and submit a [merge request](https://gitlab.com/salim_b/tocr/merge_requests).
+tocr's `add_toc()` supports the comment format of [other similar software](#see-also) like [doctoc](https://github.com/thlorenz/doctoc). If you stumble upon software-generated Markdown TOCs which aren't recognized by `add_toc()`, feel free to [file an issue](http://gitlab.com/salim_b/tocr/issues) or even add support for it on your own and submit a [merge request](https://gitlab.com/salim_b/tocr/merge_requests).
 
 ## Installation
 
@@ -35,7 +35,7 @@ remotes::install_git(url = "http://gitlab.com/salim_b/tocr.git")
 
 ## Development
 
-This package is written using literate programming techniques proposed by [Yihui Xie](https://yihui.name/rlp/). This means all the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from their respective R Markdown counterparts found under [`Rmd/`](Rmd/) as instructed by the [`Makefile`](Makefile). Always make changes to the `.Rmd` files – not the `.R` files – and then run the following from the root of this repository to regenerate the R source code and build and install the package:
+This package is written using [literate programming](https://en.wikipedia.org/wiki/Literate_programming) techniques proposed by [Yihui Xie](https://yihui.name/rlp/). This means all the `-GEN.R` suffixed R source code found under [`R/`](R/) is generated from their respective [R Markdown](https://rmarkdown.rstudio.com/) counterparts found under [`Rmd/`](Rmd/) as instructed by the [`Makefile`](Makefile). Always make changes only to the `.Rmd` files – not the `.R` files – and then run the following from the root of this repository to regenerate the R source code and build and install the package:
 
 ```sh
 make && Rscript -e "devtools::install('.', keep_source = TRUE)"

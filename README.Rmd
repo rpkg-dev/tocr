@@ -31,7 +31,7 @@ tocr uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_c
 <!-- TOC END -- leave this comment untouched to allow auto update -->
 ```
 
-tocr's `add_toc()` supports the comment format of other similar software like [doctoc](https://github.com/thlorenz/doctoc). If you stumble upon software-generated Markdown TOCs which aren't recognized by `add_toc()`, feel free to [file an issue](http://gitlab.com/salim_b/tocr/issues) or even add support for it on your own and submit a [merge request](https://gitlab.com/salim_b/tocr/merge_requests).
+tocr's `add_toc()` supports the comment format of [other similar software](#see-also) like [doctoc](https://github.com/thlorenz/doctoc). If you stumble upon software-generated Markdown TOCs which aren't recognized by `add_toc()`, feel free to [file an issue](http://gitlab.com/salim_b/tocr/issues) or even add support for it on your own and submit a [merge request](https://gitlab.com/salim_b/tocr/merge_requests).
 
 ## Installation
 ```{r, install-snippet, child = file_path_installation_notice_dev_version}
