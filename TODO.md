@@ -63,6 +63,9 @@
 
 - [ ] add options to set number of newlines above and below TOC comments
 
+- [ ] add option to make TOC foldable by enclosing it in HTML `<details>` and [`<summary>`](https://www.w3schools.com/tags/tag_summary.asp) tags
+    - example of such a TOC: <https://github.com/netlify/addons/blob/6e888b3b80a6960de56d61596cb75986bb8955d3/README.md>
+
 - [ ] make the package's functionality somehow available as a webservice!
 
 
