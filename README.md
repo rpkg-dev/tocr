@@ -22,7 +22,7 @@ tocr's `add_toc()` supports the comment format of [other similar software](#see-
 
 ## Installation
 
-To install the latest development version of `tocr`, run the following in R:
+To install the latest development version of _tocr_, run the following in R:
 
 ```r
 if ( !("remotes" %in% rownames(installed.packages())) )
@@ -30,7 +30,7 @@ if ( !("remotes" %in% rownames(installed.packages())) )
   install.packages(pkgs = "remotes",
                    repos = "https://cloud.r-project.org/")
 }
-remotes::install_git(url = "http://gitlab.com/salim_b/tocr.git")
+remotes::install_gitlab(repo = "salim_b/tocr")
 ```
 
 ## Development
