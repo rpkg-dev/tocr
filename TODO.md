@@ -26,6 +26,8 @@
 
 ## Bugs
 
+- [ ] umlauts aren't lowercased as requied (at least not when `format = "gitlab"`)
+
 - [ ] fix handling of trailing `#` in header processing (adhere to <try.commonmark.org>)
 
 - [ ] duplicated h1-header (generell strange), wenn `position` > 7 und < 27:
