@@ -5,6 +5,8 @@
 - [x] rename package to `tocr`
     - minor issue: there's another R package named [tocR](https://github.com/sambold/tocR/) to crawl TOR sites (not on CRAN) -> ideally its author would rename it to `torc`!
 
+- [ ] `add_toc()`: remove param `add_title` and use `title = NULL` to disable the title
+
 - [ ] remove Markdown footnotes from TOC entries; example: <https://gitlab.com/c2d-zda/i_voting_dataset/blob/master/ANALYSIS.md>
 
 - [ ] finish intro-Vignette
@@ -12,8 +14,6 @@
 - [ ] `add_toc()`: add description line and details (i.a. link to intro-Vignette)
 
 - [ ] DESCRIPTION: overthink `Description` field.
-
-- [x] generate notice about literate programming @ beginning of *-GEN.R files in Makefile
 
 - [ ] set up some tests!
     - [ ] separate md documents for every feature without and with TOC --> running them through `add_toc()` needs to produce identical results!
