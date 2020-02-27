@@ -22,8 +22,8 @@ knitr::opts_chunk$set(
 )
 
 # set global R options
-options(digits = 5,
-        scipen = 999)
+options(digits = 5L,
+        scipen = 999L)
 ```
 
 Note that the following examples use [magrittr's piping operators](http://magrittr.tidyverse.org/). Therefore we have to load and attach the `magrittr` package before running any of the subsequent code:
