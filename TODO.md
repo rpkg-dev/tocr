@@ -11,18 +11,13 @@
 
 - [ ] finish intro-Vignette
 
-- [ ] `add_toc()`: add description line and details (i.a. link to intro-Vignette)
+- [ ] `add_toc()`: add proper @description and @details (i.a. link to intro-Vignette)
 
-- [ ] DESCRIPTION: overthink `Description` field.
-
-- [ ] set up some tests!
+- [ ] set up testthat tests!
     - [ ] separate md documents for every feature without and with TOC --> running them through `add_toc()` needs to produce identical results!
     - [ ] huge mega md document (or several of them) without and with TOC --> running it through `add_toc()` needs to produce an identical result!
     - [ ] `handle_existing_toc()` --> TOC comment detection
         - see `/home/salim/Schreibtisch/Markdown TOC - comment format.jpg`
-
-- [ ] Makefile/README.Rmd: instead of downloading the snippets everytime inside the README.Rmd, do it in the Makefile and only redownload if changed
-    - see: <https://unix.stackexchange.com/questions/425297/how-can-i-use-files-from-http-as-prerequisites-in-gnu-make>
 
 ## Bugs
 
@@ -30,7 +25,7 @@
 
 - [ ] fix handling of trailing `#` in header processing (adhere to <try.commonmark.org>)
 
-- [ ] duplicated h1-header (generell strange), wenn `position` > 7 und < 27:
+- [ ] duplicated h1 header (strange in general) if `position` > 7 and < 27:
 
     ```
     readLines(con = "https://raw.githubusercontent.com/thlorenz/doctoc/1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md") %>%
@@ -40,10 +35,9 @@
 
 ## Features
 
-- [ ] re-export magrittr's piping operators and update examples and intro vignette
+- [ ] add `add_anchor_symbols` option (default: `FALSE`) adding the HTML anchor link _after_ the header text as a clickable `🔗` (U+1F517) symbol. By default, use Markdown links, but maybe add option to color (light grey by default) the symbols? add the same for the backlinks?
 
-- [ ] add `position = "existing"` and make it the default (maybe in combo with `"above"`, i.e. `position = c("existing", "above)`)
-    This should just place the TOC at the exact same position as an already existing TOC.
+- [ ] add `position = "existing"` and make it the default (with fallback to `"above"` if no TOC exists). This should just place the TOC at the exact same position as an already existing TOC.
 
 - [ ] add support for `markdown_flavor="pandoc"`, see <http://pandoc.org/MANUAL.html#header-identifiers>
 
@@ -65,20 +59,45 @@
 
 - [ ] add options to set number of newlines above and below TOC comments
 
-- [ ] add option to make TOC foldable by enclosing it in HTML `<details>` and [`<summary>`](https://www.w3schools.com/tags/tag_summary.asp) tags
-    - example of such a TOC: <https://github.com/netlify/addons/blob/6e888b3b80a6960de56d61596cb75986bb8955d3/README.md>
+- [ ] add option to make TOC foldable by enclosing it in HTML `<details>` and [`<summary>`](https://www.w3schools.com/tags/tag_summary.asp) tags. 
 
-- [ ] make the package's functionality somehow available as a webservice!
+- [ ] add option `collapsible` to wrap the TOC in a [`<details>` tag](https://www.w3schools.com/TAGS/tag_details.asp) and the title in a [`<summary>` tag](https://www.w3schools.com/tags/tag_summary.asp). Example of such a TOC: <https://github.com/netlify/addons/blob/6e888b3b80a6960de56d61596cb75986bb8955d3/README.md>
+  
+  `collapsible` should support the following values:
+    - `NULL` (no `<details>` tag)
+    - `opened` (default open)
+    - `closed` (default collapsed)
+  
+  Open question: Do the backlinks still work with this? Only when `opened`?
+
+- [ ] make the package's functionality available as a webservice.
+
+    - ideally completely [serverless](https://en.wikipedia.org/wiki/Serverless_computing)!
+
+    notable tech:
+    
+    - [plumber](https://github.com/rstudio/plumber), an r package to define RESTful web API endpoints using special comments. see the book [Creating APIs in R with Plumber](https://www.rplumber.io/docs/) for details.
+    - [OpenFaaS](https://github.com/openfaas/faas), an anti-lock-in tool to manage event-driven functions and microservices using Kubernetes. see the blog post [Serverless R functions with OpenFaas](https://medium.com/@beanies/serverless-r-functions-with-openfaas-1cd34905834d) for an introduction.
+    
+    possible serverless hosting:
+    
+    - [Google Cloud Run](https://cloud.run/), Google's serverless hosting offer for FaaS. see
+        - the blog post [Serverless R functions with Cloud Run](https://ericjinks.com/blog/2019/serverless-R-cloud-run/)
+        - or googleCloudRunner's [_Cloud Run_ vignette](https://code.markedmondson.me/googleCloudRunner/articles/cloudrun.html)
+    
+    more good reads:
+    
+    - [R on Kubernetes - serverless Shiny, R APIs and scheduled scripts](https://code.markedmondson.me/r-on-kubernetes-serverless-shiny-r-apis-and-scheduled-scripts/)
+    - [Introducing googleCloudRunner - serverless R on Google Cloud Platform](https://code.markedmondson.me/googleCloudRunner-intro/)
 
 
 ## to add a TOC
 
 - [broom](https://github.com/tidyverse/broom)
+- [drake](https://github.com/ropensci/drake/blob/master/README.md)
 - [youtube-dl](https://github.com/rg3/youtube-dl/)
 
 
 ## to spread package
 
 - <https://github.com/rstudio/blogdown/issues/267>
-
-
