@@ -4,7 +4,7 @@
 \alias{remove_toc}
 \title{Remove an auto-generated table of contents (TOC) from an (R) Markdown document}
 \usage{
-remove_toc(md, old_toc_id = toc_id)
+remove_toc(md, old_toc_id = "toc")
 }
 \arguments{
 \item{md}{(R) Markdown document to be processed as a single file path, a single URL or a character vector (one string per line).}

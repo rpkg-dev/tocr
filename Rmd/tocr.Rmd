@@ -1092,7 +1092,7 @@ add_toc <- function(md,
 #'                        "1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md")) %>%
 #'   cat(sep = "\n")
 remove_toc <- function(md,
-                       old_toc_id = toc_id) {
+                       old_toc_id = "toc") {
   add_toc(md = md,
           position = "none",
           old_toc_id = old_toc_id)
