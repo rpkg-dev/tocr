@@ -69,10 +69,10 @@ get_non_code_block_indices <- function(md_lines) {
 
 Currently supported TOC comment formats:
 
-- tocr (of course)
-- [doctoc](https://github.com/thlorenz/doctoc)
-- [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
-- [Markdown TOC](https://github.com/nok/markdown-toc)
+-   tocr (of course)
+-   [doctoc](https://github.com/thlorenz/doctoc)
+-   [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+-   [Markdown TOC](https://github.com/nok/markdown-toc)
 
 ```{r}
 #' Handle existing TOC (integrity checks and removal)
@@ -264,9 +264,9 @@ evaluate_position <- function(position,
 
 **Remarks:**
 
-- Make sure to remove unwanted leading and trailing whitespaces from argument `header_text` before feeding it to this function.
+-   Make sure to remove unwanted leading and trailing whitespaces from argument `header_text` before feeding it to this function.
 
-- See <https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/user/markdown.md#header-ids-and-links> for GitLab specific ID generation.
+-   See <https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/user/markdown.md#header-ids-and-links> for GitLab specific ID generation.
 
 ```{r}
 #' Convert header text to HTML anchor
@@ -579,7 +579,7 @@ old_toc_id <- toc_id
 
 **Remarks:**
 
-- Regarding `add_title = FALSE`: A possible alternative solution to still be able to add backlinks by using style attribute `"display:none;"` for the title   doesn't seem to work, at least not on GitHub (it's still visible)).
+-   Regarding `add_title = FALSE`: A possible alternative solution to still be able to add backlinks by using style attribute `"display:none;"` for the title doesn't seem to work, at least not on GitHub (it's still visible)).
 
 ```{r}
 #' Add a table of contents (TOC) to an (R) Markdown document
