@@ -55,7 +55,7 @@ Now let's use the doctoc README as it appeared live at the end of May 2018[^doct
   tocr::add_toc(position = 33L,
                 backlink_strings = c("\U1F446", "\U1F447"),
                 listing_style = "*") %>%
-  magrittr::extract(1L:41L) %>%
+  magrittr::extract(1:41) %>%
   cat(sep = "\n")
 ```
 
@@ -111,7 +111,7 @@ The parameters `min_tier` and `max_tier` define which of all the possible header
 ```{r}
 tocr::add_toc(md = "https://raw.githubusercontent.com/tonsky/FiraCode/30862e05b00f41c9179a9424e382755a5ef954f0/README.md",
               min_tier = 3L) %>%
-  magrittr::extract(1L:25L) %>%
+  magrittr::extract(1:25) %>%
   cat(sep = "\n")
 ```
 
