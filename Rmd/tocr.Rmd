@@ -579,7 +579,8 @@ old_toc_id <- toc_id
 
 **Remarks:**
 
--   Regarding `add_title = FALSE`: A possible alternative solution to still be able to add backlinks by using style attribute `"display:none;"` for the title doesn't seem to work, at least not on GitHub (it's still visible)).
+-   Regarding `add_title = FALSE`: A possible alternative solution to still be able to add backlinks by using style attribute `"display:none;"` for the title
+    doesn't seem to work, at least not on GitHub (it's still visible)).
 
 ```{r}
 #' Add a table of contents (TOC) to an (R) Markdown document
@@ -653,7 +654,7 @@ add_toc <- function(md,
                     title = "Table of contents",
                     title_tier = min_tier,
                     add_backlinks = add_title,
-                    backlink_strings = c("\U1F805", "\U1F807"),
+                    backlink_strings = c("\u2191", "\u2193"),
                     backlink_position = c("before", "after"),
                     listing_style = c("-", "*", "ordered", "indented"),
                     toc_id = "toc",

@@ -1,6 +1,6 @@
 Package: tocr
 Title: TOC Generation for (R) Markdown Documents
-Version: 0.1.9000
+Version: 0.1.9001
 Authors@R: 
     person(given = "Salim",
            family = "Brüggemann",
