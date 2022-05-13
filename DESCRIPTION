@@ -19,7 +19,7 @@ License: AGPL (>= 3)
 URL: https://gitlab.com/salim_b/r/pkgs/tocr
 BugReports: https://gitlab.com/salim_b/r/pkgs/tocr/issues
 Depends:
-    R (>= 3.4.4)
+    R (>= 4.1)
 Imports:
     checkmate (>= 1.8.5),
     curl (>= 4.3),
@@ -41,4 +41,4 @@ Remotes:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

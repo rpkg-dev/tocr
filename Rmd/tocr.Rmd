@@ -13,7 +13,9 @@ cf. <https://github.com/tidyverse/magrittr/issues/29#issuecomment-74313262>
 utils::globalVariables(names = c("."))
 ```
 
-## Get non-code-block indices
+## Functions
+
+### `get_non_code_block_indices`
 
 Regex below tries to adhere to <https://spec.commonmark.org/0.28/#fenced-code-blocks>.
 
@@ -38,9 +40,9 @@ get_non_code_block_indices <- function(md_lines) {
         # code block ends?
         if (stringr::str_detect(string = md_lines[[i]],
                                 pattern = paste0("^ {0,3}",
-                                                 dplyr::if_else(is_tilde, "~", "`"),
+                                                 ifelse(is_tilde, "~", "`"),
                                                  "{", nr_of_fence_chars, ",} *$"))) {
-          is_inside_code_block %<>% not()
+          is_inside_code_block %<>% magrittr::not()
         }
         
       } else {
@@ -53,7 +55,7 @@ get_non_code_block_indices <- function(md_lines) {
                                           pattern = "^ {0,3}~{3,}")
           
           nr_of_fence_chars <- stringr::str_count(string = md_lines[i],
-                                                  pattern = dplyr::if_else(is_tilde, "~", "`"))
+                                                  pattern = ifelse(is_tilde, "~", "`"))
         } else {
           
           non_code_block_indices %<>% c(i)
@@ -65,7 +67,7 @@ get_non_code_block_indices <- function(md_lines) {
 }
 ```
 
-## Handle existing TOC (integrity checks and removal)
+### `handle_existing_toc`
 
 Currently supported TOC comment formats:
 
@@ -190,7 +192,7 @@ handle_existing_toc <- function(md_lines,
 }
 ```
 
-## Evaluate `position`
+### `evaluate_position`
 
 ```{r}
 #' Evaluate `position`
@@ -228,19 +230,19 @@ evaluate_position <- function(position,
     
   } else if (position == "above") {
     
-    position <- dplyr::if_else(min_tier == 1L,
-                               1L,
-                               stringr::str_which(string = md_lines,
-                                                  pattern = paste0("^ {0,3}#{", min_tier, ",6}\\s+\\S")) %>%
-                                 dplyr::first() %>%
-                                 ifelse(is.na(.), 2L, .) %>%
-                                 magrittr::subtract(1L) %>%
-                                 seq(from = 1L) %>%
-                                 magrittr::extract(md_lines, .) %>%
-                                 stringr::str_which(pattern = paste0("^ {0,3}#{1,", min_tier, "}\\s+\\S")) %>%
-                                 dplyr::last() %>%
-                                 ifelse(is.na(.), 0L, .) %>%
-                                 magrittr::add(1L))
+    position <- ifelse(min_tier == 1L,
+                       1L,
+                       stringr::str_which(string = md_lines,
+                                          pattern = paste0("^ {0,3}#{", min_tier, ",6}\\s+\\S")) %>%
+                         dplyr::first() %>%
+                         ifelse(is.na(.), 2L, .) %>%
+                         magrittr::subtract(1L) %>%
+                         seq(from = 1L) %>%
+                         magrittr::extract(md_lines, .) %>%
+                         stringr::str_which(pattern = paste0("^ {0,3}#{1,", min_tier, "}\\s+\\S")) %>%
+                         dplyr::last() %>%
+                         ifelse(is.na(.), 0L, .) %>%
+                         magrittr::add(1L))
     
   } else if (position == "below") {
     
@@ -260,7 +262,7 @@ evaluate_position <- function(position,
 }
 ```
 
-## Convert header text to HTML anchor
+### `convert_header_to_anchor`
 
 **Remarks:**
 
@@ -390,7 +392,7 @@ convert_header_to_anchor <- function(header_text,
 }
 ```
 
-## Process Markdown document line by line (clean it and build new TOC entries)
+### `process_md`
 
 ```{r}
 #' Process Markdown document line by line (clean it and build new TOC entries)
@@ -449,9 +451,9 @@ process_md <- function(md_lines,
         stringr::str_replace_all(pattern = paste0("\\[[^\\]]*?\\]\\(#(",
                                                   toc_id, "|",
                                                   old_toc_id,
-                                                  dplyr::if_else(is_header_title,
-                                                                 "",
-                                                                 paste0("|", new_toc_id)),
+                                                  ifelse(is_header_title,
+                                                         "",
+                                                         paste0("|", new_toc_id)),
                                                   ")-*?\\) ?"),
                                  replacement = "") %>%
         # remove all anchor links where the link text is no longer than 2 chars
@@ -506,9 +508,9 @@ process_md <- function(md_lines,
           magrittr::subtract(min_tier - 1L)
         
         # update enumeration for ordered list TOC
-        enumeration <- dplyr::if_else(tier == previous_tier,
-                                      enumeration + 1L,
-                                      1L)
+        enumeration <- ifelse(tier == previous_tier,
+                              enumeration + 1L,
+                              1L)
         
         # update TOC data
         toc_data %<>% dplyr::add_row(tier = tier,
@@ -575,7 +577,9 @@ toc_id <- "toc"
 old_toc_id <- toc_id
 ```
 
-# Add a table of contents (TOC) to an (R) Markdown document
+# EXPORTED
+
+## `add_toc`
 
 **Remarks:**
 
@@ -636,15 +640,16 @@ old_toc_id <- toc_id
 #' @export
 #'
 #' @examples
-#' library(magrittr)
-#'
-#' "https://raw.githubusercontent.com/ropensci/pdftools/e7248d9956c7e73968628fa3a8ed37f0a8c23b37/README.md" %>%
-#'   add_toc(position = 9) %>%
+#' md <- paste0("https://raw.githubusercontent.com/ropensci/pdftools/",
+#'              "e7248d9956c7e73968628fa3a8ed37f0a8c23b37/README.md")
+#' 
+#' md |>
+#'   tocr::add_toc(position = 9) |>
 #'   cat(sep = "\n")
 #' 
-#' add_toc(md = "https://raw.githubusercontent.com/ropensci/pdftools/e7248d9956c7e73968628fa3a8ed37f0a8c23b37/README.md",
-#'         listing_style = "ordered") %>%
-#'   readr::write_lines(path = "rmarkdown_README_incl_TOC.md")
+#' md |>
+#'   tocr::add_toc(listing_style = "ordered") |>
+#'   cat(sep = "\n")
 add_toc <- function(md,
                     min_tier = 2L,
                     max_tier = 6L,
@@ -815,15 +820,14 @@ add_toc <- function(md,
                                   filename = basename(md))
   
   # determine fallback HTML <id> attribute position for backlinks (ID of next header line above the TOC if existing)
-  fallback_id_position <-
-    dplyr::if_else(position > 1L,
-                   stringr::str_which(string = md_lines[1L:(min(length(md_lines), max(position - 1L, 1L)))],
-                                      pattern = "^ {0,3}#{1,6}\\s+\\S") %>%
-                     dplyr::last() %>%
-                     # if no header lines above TOC found, set to -1
-                     dplyr::if_else(is.na(.), -1L, .),
-                   # if `position` is 1 (or "none") there can't be any header lines above TOC
-                   1L)
+  fallback_id_position <- ifelse(position > 1L,
+                                 stringr::str_which(string = md_lines[1L:(min(length(md_lines), max(position - 1L, 1L)))],
+                                                    pattern = "^ {0,3}#{1,6}\\s+\\S") %>%
+                                   dplyr::last() %>%
+                                   # if no header lines above TOC found, set to -1
+                                   ifelse(is.na(.), -1L, .),
+                                 # if `position` is 1 (or "none") there can't be any header lines above TOC
+                                 1L)
   
   # determine if TOC title is a header or not
   is_header_title <- is.numeric(title_tier)
@@ -840,9 +844,9 @@ add_toc <- function(md,
     )
   
   # set position of new TOC ID
-  new_toc_id_position <- dplyr::if_else(use_fallback,
-                                        fallback_id_position,
-                                        as.integer(position))
+  new_toc_id_position <- ifelse(use_fallback,
+                                fallback_id_position,
+                                as.integer(position))
   
   # generate actual TOC ID if `position != "none"` (ensure it's unique)
   if (new_toc_id_position > 0L) {
@@ -850,8 +854,9 @@ add_toc <- function(md,
     ## get all header texts preceding `new_toc_id_position` (to avoid duplicates)
     preceding_anchor_links <-
       # extract all header lines until `new_toc_id_position`
-      stringr::str_subset(string = md_lines[1L : dplyr::case_when(use_fallback ~ new_toc_id_position,
-                                                                  TRUE ~ as.integer(new_toc_id_position - 1L))],
+      stringr::str_subset(string = md_lines[1:ifelse(use_fallback,
+                                                     new_toc_id_position,
+                                                     new_toc_id_position - 1L)],
                           pattern = "^ {0,3}#{1,6}\\s+\\S") %>%
       # remove leading hashtags
       stringr::str_replace(pattern = "^ *#+",
@@ -1073,7 +1078,11 @@ add_toc <- function(md,
 }
 ```
 
-# Remove an auto-generated table of contents (TOC) from an (R) Markdown document
+## `remove_toc`
+
+TODO:
+
+-   Fix example
 
 ```{r}
 #' Remove an auto-generated table of contents (TOC) from an (R) Markdown document
@@ -1087,11 +1096,10 @@ add_toc <- function(md,
 #' @export
 #' 
 #' @examples
-#' library(magrittr)
-#' 
-#' remove_toc(md = paste0("https://raw.githubusercontent.com/thlorenz/doctoc/",
-#'                        "1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md")) %>%
-#'   cat(sep = "\n")
+#' \dontrun{
+#' tocr::remove_toc(md = paste0("https://raw.githubusercontent.com/thlorenz/doctoc/",
+#'                              "1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md")) |>
+#'   cat(sep = "\n")}
 remove_toc <- function(md,
                        old_toc_id = "toc") {
   add_toc(md = md,

@@ -1,5 +1,9 @@
 # TODO
 
+## General
+
+- [ ] a cleaner approach to parse the MD would be relying on `commonmark::markdown_xml()` or `pal::md_xml()` which builds upon the former; besides there's the [tinkr](https://docs.ropensci.org/tinkr/) package which also builds upon that, its [`to_xml()`](https://docs.ropensci.org/tinkr/reference/to_xml.html) seems to offer an additional param `anchor_links` to properly handle reference-style links (which aren't supported by CommonMark?); tinkr also offers [`to_md()`](https://docs.ropensci.org/tinkr/reference/to_md.html) which converts the XML back to (R)md
+
 ## stuff to finish
 
 - [x] rename package to `tocr`
