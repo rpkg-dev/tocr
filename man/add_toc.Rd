@@ -103,9 +103,9 @@ md <- paste0("https://raw.githubusercontent.com/ropensci/pdftools/",
 
 md |>
   tocr::add_toc(position = 9) |>
-  cat(sep = "\n")
+  pal::cat_lines()
 
 md |>
   tocr::add_toc(listing_style = "ordered") |>
-  cat(sep = "\n")
+  pal::cat_lines()
 }

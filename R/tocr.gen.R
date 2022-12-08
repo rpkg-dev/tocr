@@ -141,19 +141,19 @@ handle_existing_toc <- function(md_lines,
     ## if TOC is topmost
     if (toc_begin_position == 1L) {
       
-      md_lines <- md_lines[(toc_end_position + 1L) : length(md_lines)]
+      md_lines <- md_lines[(toc_end_position + 1L):length(md_lines)]
       
       ## if TOC is undermost (ensure there's an empty line at the end)
     } else if (toc_end_position == length(md_lines)) {
       
-      md_lines <- c(md_lines[1L : (toc_begin_position - 1L)], "")
+      md_lines <- c(md_lines[1L:(toc_begin_position - 1L)], "")
       
       ## if TOC is somewhere in the middle
     } else {
       
-      md_lines <- c(md_lines[1L : (toc_begin_position - 1L)],
+      md_lines <- c(md_lines[1L:(toc_begin_position - 1L)],
                     "",
-                    md_lines[(toc_end_position + 1L) : length(md_lines)])
+                    md_lines[(toc_end_position + 1L):length(md_lines)])
     }
   } else {
     
@@ -275,11 +275,10 @@ convert_header_to_anchor <- function(header_text,
     ## split header into single chars
     header_split <-
       header_text %>%
-      stringr::str_split(pattern = "") %>%
-      dplyr::first()
+      stringr::str_split_1(pattern = "")
     
     ## only convert ASCII chars to lower case
-    if (length(non_ascii_char_indices)) {
+    if (length(non_ascii_char_indices) > 0L) {
       
       header_split[-non_ascii_char_indices] %<>% stringr::str_to_lower()
       
@@ -580,11 +579,11 @@ process_md <- function(md_lines,
 #' 
 #' md |>
 #'   tocr::add_toc(position = 9) |>
-#'   cat(sep = "\n")
+#'   pal::cat_lines()
 #' 
 #' md |>
 #'   tocr::add_toc(listing_style = "ordered") |>
-#'   cat(sep = "\n")
+#'   pal::cat_lines()
 add_toc <- function(md,
                     min_tier = 2L,
                     max_tier = 6L,
@@ -1026,7 +1025,7 @@ add_toc <- function(md,
 #' \dontrun{
 #' tocr::remove_toc(md = paste0("https://raw.githubusercontent.com/thlorenz/doctoc/",
 #'                              "1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md")) |>
-#'   cat(sep = "\n")}
+#'   pal::cat_lines()}
 remove_toc <- function(md,
                        old_toc_id = "toc") {
   add_toc(md = md,

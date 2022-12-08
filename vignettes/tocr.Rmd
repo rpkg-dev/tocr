@@ -1,17 +1,12 @@
 ---
-title: "An introduction to the **tocr** package:"
-subtitle: "Adding/updating/removing TOCs to/from (R) Markdown documents"
-author: "Salim Brüggemann"
-date: "`r Sys.Date()`"
-output:
-  rmarkdown::html_vignette:
-    toc: true
+title: "Introduction to tocr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to tocr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 editor_options:
   chunk_output_type: console
-vignette: >
-  %\VignetteIndexEntry{An introduction to the **tocr** package}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r, setup, include = FALSE}
@@ -53,7 +48,7 @@ the first 41 lines:
                 backlink_strings = c("\U1F446", "\U1F447"),
                 listing_style = "*") |>
   magrittr::extract(1:41) |>
-  cat(sep = "\n")
+  pal::cat_lines()
 ```
 
 This removes the existing TOC and writes a new one which differs in the following characteristics:
@@ -72,7 +67,7 @@ Let's use the doctoc README file [from before](#updating_an_existing_toc_of_an_r
 ```{r, eval = FALSE}
 # TODO: Fix me!
 tocr::remove_toc("https://raw.githubusercontent.com/thlorenz/doctoc/1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md") |>
-  cat(sep = "\n")
+  pal::cat_lines()
 ```
 
 Optionally you can specify an `old_toc_id` to [remove leftover backlinks](#remove_leftover_backlinks).
@@ -114,7 +109,7 @@ from this premise, you might wanna set `min_tier` by hand. The [Fira Code](https
 tocr::add_toc(md = "https://raw.githubusercontent.com/tonsky/FiraCode/30862e05b00f41c9179a9424e382755a5ef954f0/README.md",
               min_tier = 3L) |>
   magrittr::extract(1:25) |>
-  cat(sep = "\n")
+  pal::cat_lines()
 ```
 
 The same way you can restrict the maximum tier to be included in the TOC. If we don't want to mention anything below tier `<h3>` for example, we set
@@ -124,7 +119,7 @@ The same way you can restrict the maximum tier to be included in the TOC. If we 
 tocr::add_toc(md = "https://raw.githubusercontent.com/tonsky/FiraCode/30862e05b00f41c9179a9424e382755a5ef954f0/README.md",
               max_tier = 3L) |>
   magrittr::extract(1:25) |>
-  cat(sep = "\n")
+  pal::cat_lines()
 ```
 
 [^2]: Effective [May 31, 2018](https://github.com/tonsky/FiraCode/blob/30862e05b00f41c9179a9424e382755a5ef954f0/README.md).

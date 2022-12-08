@@ -21,7 +21,7 @@ This is a simple convenience wrapper for \code{add_toc(..., position = "none")}.
 \dontrun{
 tocr::remove_toc(md = paste0("https://raw.githubusercontent.com/thlorenz/doctoc/",
                              "1d386261972d35c6bcd187d0a00e666f9d893d8d/README.md")) |>
-  cat(sep = "\n")}
+  pal::cat_lines()}
 }
 \seealso{
 \code{\link[=add_toc]{add_toc()}}
