@@ -11,6 +11,7 @@ tocr allows to automatically add/update/remove a table of contents (TOC) to/from
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://tocr.rpkg.dev}
   \item \url{https://gitlab.com/salim_b/r/pkgs/tocr}
   \item Report bugs at \url{https://gitlab.com/salim_b/r/pkgs/tocr/issues}
 }

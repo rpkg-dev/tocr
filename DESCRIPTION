@@ -16,7 +16,7 @@ Description: tocr allows to automatically add/update/remove
     tailor the TOC to specific needs. It can also convert a wide range of
     similar auto-generated TOC formats to its own one.
 License: AGPL (>= 3)
-URL: https://gitlab.com/salim_b/r/pkgs/tocr
+URL: https://tocr.rpkg.dev, https://gitlab.com/salim_b/r/pkgs/tocr
 BugReports: https://gitlab.com/salim_b/r/pkgs/tocr/issues
 Depends:
     R (>= 4.1)

@@ -3,7 +3,7 @@ pkgdown: 2.0.6.9000
 pkgdown_sha: a9acf503411cbf26bb09fc19dee814968e8af944
 articles:
   tocr: tocr.html
-last_built: 2022-12-08T13:42Z
+last_built: 2022-12-12T01:35Z
 urls:
   reference: https://tocr.rpkg.dev/reference
   article: https://tocr.rpkg.dev/articles

@@ -20,6 +20,8 @@ tocr uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_c
 
 ## Documentation
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0bb75d33-429c-4295-8de9-94a11ebc27d2/deploy-status)](https://app.netlify.com/sites/tocr-rpkg-dev/deploys)
+
 The documentation of this package is found [here](https://tocr.rpkg.dev).
 
 ## Installation

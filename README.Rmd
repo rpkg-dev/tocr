@@ -30,7 +30,10 @@ even add support for it on your own and submit a [merge request](https://gitlab.
 #| results: asis
 #| echo: false
 pkgsnip::md_snip(name = "pkgdown_notice") %>%
-  paste0("## Documentation\n\n", .) %>%
+  paste0("## Documentation\n\n",
+         "[![Netlify Status](https://api.netlify.com/api/v1/badges/0bb75d33-429c-4295-8de9-94a11ebc27d2/deploy-status)]",
+         "(https://app.netlify.com/sites/tocr-rpkg-dev/deploys)\n\n",
+         .) %>%
   pal::cat_lines()
 ```
 
