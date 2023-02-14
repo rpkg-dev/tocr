@@ -25,15 +25,16 @@ Imports:
     curl (>= 4.3),
     dplyr (>= 1.0.0),
     glue (>= 1.4.1),
-    magrittr (>= 1.5),
-    pal (>= 0.0.9090),
+    magrittr (>= 2.0),
+    pal (>= 0.0.9093),
     readr (>= 1.1.1),
     rlang (>= 0.4.7),
     stringr (>= 1.5.0),
     tibble (>= 3.0.3)
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    utils
 VignetteBuilder: 
     knitr
 Remotes:
@@ -41,4 +42,4 @@ Remotes:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

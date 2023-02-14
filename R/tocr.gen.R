@@ -2,7 +2,7 @@
 # See `README.md#r-markdown-format` for more information on the literate programming approach used applying the R Markdown format.
 
 # tocr: TOC Generation for (R) Markdown Documents
-# Copyright (C) 2022 Salim Brüggemann
+# Copyright (C) 2023 Salim Brüggemann
 # 
 # This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free
 # Software Foundation, either version 3 of the License, or any later version.
@@ -477,10 +477,10 @@ process_md <- function(md_lines,
                               1L)
         
         # update TOC data
-        toc_data %<>% dplyr::add_row(tier = tier,
-                                     enumeration = enumeration,
-                                     header_text = header_text,
-                                     anchor_link = dplyr::last(anchor_links))
+        toc_data %<>% tibble::add_row(tier = tier,
+                                      enumeration = enumeration,
+                                      header_text = header_text,
+                                      anchor_link = dplyr::last(anchor_links))
         
         # add link back to TOC (if header isn't backlink target)
         if (add_backlinks & !(use_fallback & i == new_toc_id_position)) {
@@ -768,14 +768,9 @@ add_toc <- function(md,
   
   # determine if we actually fall back
   use_fallback <-
-    dplyr::case_when(
-      !add_title & fallback_id_position > 0L ~ TRUE,
-      
-      # GitLab quirk: GitLab currently ignores manually set HTML <id> attributes (effective July 2017)
-      md_flavor == "gitlab" & !is_header_title & fallback_id_position > 0L ~ TRUE,
-      
-      TRUE ~ FALSE
-    )
+    (!add_title && fallback_id_position > 0L) ||
+    # GitLab quirk: GitLab currently ignores manually set HTML <id> attributes (effective July 2017)
+    (md_flavor == "gitlab" & !is_header_title & fallback_id_position > 0L)
   
   # set position of new TOC ID
   new_toc_id_position <- ifelse(use_fallback,
@@ -822,26 +817,24 @@ add_toc <- function(md,
   
   ## set actual TOC ID
   new_toc_id <-
-    dplyr::case_when(
       # if `position == "none`, use `toc_id` to allow removal of old backlinks
-      new_toc_id_position == -1L ~
-        toc_id,
+    if (new_toc_id_position == -1L) {
+      toc_id
       
-      use_fallback ~
-        dplyr::last(preceding_anchor_links),
+    } else if (use_fallback) {
+      dplyr::last(preceding_anchor_links)
       
-      is_header_title ~
-        convert_header_to_anchor(header_text = title,
-                                 md_flavor = md_flavor,
-                                 preceding_anchor_links = preceding_anchor_links,
-                                 backlink_position = backlink_position),
-      
-      TRUE ~
-        convert_header_to_anchor(header_text = toc_id,
-                                 md_flavor = md_flavor,
-                                 preceding_anchor_links = preceding_anchor_links,
-                                 backlink_position = backlink_position)
-    )
+    } else if (is_header_title) {
+      convert_header_to_anchor(header_text = title,
+                               md_flavor = md_flavor,
+                               preceding_anchor_links = preceding_anchor_links,
+                               backlink_position = backlink_position)
+    } else  {
+      convert_header_to_anchor(header_text = toc_id,
+                               md_flavor = md_flavor,
+                               preceding_anchor_links = preceding_anchor_links,
+                               backlink_position = backlink_position)
+    }
   
   # avoid addition of backlinks if impossible or `position = "none"`
   # GitLab quirk: note that GitLab currently ignores the HTML <id> attribute added to a non-header TOC title
@@ -897,20 +890,26 @@ add_toc <- function(md,
     ## assemble TOC entries
     for (i in seq_len(nrow(toc_data))) {
       
-      toc %<>% c(dplyr::case_when(listing_style == "ordered" ~
-                                    stringr::str_dup(string = "    ",
-                                                     times = toc_data$tier[i] - 1L - toc_tier_offset) %>%
-                                    paste0(toc_data$enumeration[i], ". [", toc_data$header_text[i], "]", "(#", toc_data$anchor_link[i], ")"),
-                                  
-                                  listing_style == "indented" ~
-                                    stringr::str_dup(string = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
-                                                     times = toc_data$tier[i] - 1L - toc_tier_offset) %>%
-                                    paste0("[", toc_data$header_text[i], "]", "(#", toc_data$anchor_link[i], ")  "),
-                                  
-                                  TRUE ~
-                                    stringr::str_dup(string = "    ",
-                                                     times = toc_data$tier[i] - 1L - toc_tier_offset) %>%
-                                    paste0(listing_style, " [", toc_data$header_text[i], "]", "(#", toc_data$anchor_link[i], ")")))
+      entry <-
+        if (listing_style == "ordered") {
+          
+          stringr::str_dup(string = "    ",
+                           times = toc_data$tier[i] - 1L - toc_tier_offset) %>%
+            paste0(toc_data$enumeration[i], ". [", toc_data$header_text[i], "]", "(#", toc_data$anchor_link[i], ")")
+          
+        } else if (listing_style == "indented") {
+          
+          stringr::str_dup(string = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
+                           times = toc_data$tier[i] - 1L - toc_tier_offset) %>%
+            paste0("[", toc_data$header_text[i], "]", "(#", toc_data$anchor_link[i], ")  ")
+          
+        } else {
+          stringr::str_dup(string = "    ",
+                           times = toc_data$tier[i] - 1L - toc_tier_offset) %>%
+            paste0(listing_style, " [", toc_data$header_text[i], "]", "(#", toc_data$anchor_link[i], ")")
+        }
+      
+      toc %<>% c(entry)
     }
     
     ## define TOC begin and end comments for identification
@@ -919,89 +918,91 @@ add_toc <- function(md,
     
     ## assemble complete TOC
     toc <-
-      dplyr::case_when(add_title & title_tier == "regular" ~
-                         list(c(toc_begin_comment,
-                                "",
-                                paste0("<p id='", toc_id, "'>", title, "</p>"),
-                                "",
-                                toc,
-                                "",
-                                toc_end_comment
-                         )),
-                       
-                       add_title & title_tier == "bold" ~
-                         list(c(toc_begin_comment,
-                                "",
-                                paste0("<strong id='", toc_id, "'>", title, "</strong>"),
-                                "",
-                                toc,
-                                "",
-                                toc_end_comment
-                         )),
-                       
-                       add_title & title_tier == "italic" ~
-                         list(c(toc_begin_comment,
-                                "",
-                                paste0("<em id='", toc_id, "'>", title, "</em>"),
-                                "",
-                                toc,
-                                "",
-                                toc_end_comment
-                         )),
-                       
-                       add_title ~
-                         list(c(toc_begin_comment,
-                                "",
-                                paste0(stringr::str_dup(string = "#",
-                                                        times = ifelse(is_header_title,
-                                                                       title_tier,
-                                                                       0L)),
-                                       " ",
-                                       title),
-                                "",
-                                toc,
-                                "",
-                                toc_end_comment
-                         )),
-                       
-                       TRUE ~
-                         list(c(toc_begin_comment,
-                                "",
-                                toc,
-                                "",
-                                toc_end_comment
-                         ))) %>%
-      unlist()
+      if (add_title && title_tier == "regular") {
+        
+        list(c(toc_begin_comment,
+               "",
+               paste0("<p id='", toc_id, "'>", title, "</p>"),
+               "",
+               toc,
+               "",
+               toc_end_comment))
+        
+      } else if (add_title && title_tier == "bold") {
+        
+        list(c(toc_begin_comment,
+               "",
+               paste0("<strong id='", toc_id, "'>", title, "</strong>"),
+               "",
+               toc,
+               "",
+               toc_end_comment))
+        
+      } else if (add_title && title_tier == "italic") {
+        
+        list(c(toc_begin_comment,
+               "",
+               paste0("<em id='", toc_id, "'>", title, "</em>"),
+               "",
+               toc,
+               "",
+               toc_end_comment))
+        
+      } else if (add_title) {
+        
+        list(c(toc_begin_comment,
+               "",
+               paste0(stringr::str_dup(string = "#",
+                                       times = ifelse(is_header_title,
+                                                      title_tier,
+                                                      0L)),
+                      " ",
+                      title),
+               "",
+               toc,
+               "",
+               toc_end_comment))
+      } else {
+        
+        list(c(toc_begin_comment,
+               "",
+               toc,
+               "",
+               toc_end_comment))
+      }
+    
+    toc %<>% unlist()
     
     ## if line above/below is not empty, add additional empty line above/below TOC
-    if (position > 1L & !stringr::str_detect(string = md_lines[max(position - 1L, 1L)],
-                                             pattern = "^\\s*$")) {
+    if (position > 1L && !stringr::str_detect(string = md_lines[max(position - 1L, 1L)],
+                                              pattern = "^\\s*$")) {
       toc %<>% c("", .)
     }
     
-    if (position < length(md_lines) & !stringr::str_detect(string = md_lines[max(position, 1L)],
-                                                           pattern = "^\\s*$")) {
+    if (position < length(md_lines) && !stringr::str_detect(string = md_lines[max(position, 1L)],
+                                                            pattern = "^\\s*$")) {
       toc %<>% c("")
     }
     
     # insert new TOC
     md_lines_new <-
-      dplyr::case_when(position == -1L ~
-                         list(md_lines),
-                       
-                       position == 1L ~
-                         list(c(toc,
-                                md_lines)),
-                       
-                       position == length(md_lines) + 1L ~
-                         list(c(md_lines,
-                                toc)),
-                       
-                       TRUE ~
-                         list(c(md_lines[1L : max(position - 1L, 1L)],
-                                toc,
-                                md_lines[max(position, 1L) : length(md_lines)]))) %>%
-      unlist()
+      if (position == -1L) {
+        list(md_lines)
+        
+      } else if (position == 1L) {
+        list(c(toc,
+               md_lines))
+        
+      } else if (position == length(md_lines) + 1L) {
+        list(c(md_lines,
+               toc))
+      } else {
+        list(c(md_lines[1L:max(position - 1L, 1L)],
+               toc,
+               md_lines[max(position, 1L):length(md_lines)]))
+      }
+    
+    md_lines_new %<>% unlist()
     
   } else {
     message("\nNo header entries of `min_tier` (<h", min_tier, ">) or below found in '", basename(md), "'! Nothing done.\n")
