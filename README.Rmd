@@ -28,8 +28,8 @@ tocr uses the following two [HTML comments](https://www.w3schools.com/TAGS/tag_c
 ```
 
 `tocr::add_toc()` supports the comment format of [other similar software](#see-also) like [doctoc](https://github.com/thlorenz/doctoc). If you stumble upon
-software-generated Markdown TOCs which aren't recognized by `tocr::add_toc()`, feel free to [file an issue](http://gitlab.com/salim_b/r/pkgs/tocr/issues) or
-even add support for it on your own and submit a [merge request](https://gitlab.com/salim_b/r/pkgs/tocr/merge_requests).
+software-generated Markdown TOCs which aren't recognized by `tocr::add_toc()`, feel free to [file an issue](http://gitlab.com/rpkg.dev/tocr/issues) or even add
+support for it on your own and submit a [merge request](https://gitlab.com/rpkg.dev/tocr/merge_requests).
 
 ```{r}
 #| label: documentation
