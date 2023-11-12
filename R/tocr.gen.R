@@ -557,8 +557,7 @@ process_md <- function(md_lines,
 #'   fallback the backlinks point to the next header line above `position` (if any found). This will also be the case if `md_flavor = "gitlab"` and
 #'   `title_tier` is set to a non-header value (`"regular"`, `"bold"` or `"italic"`) because GitLab currently ignores manually set HTML `<id>` attributes.
 #' @param backlink_strings String(s) to use as link text back to the TOC. A character vector of length 1 or 2. If two strings are provided, the first one will
-#'   be used for backlinks below `position`, the second one for backlinks above `position`. Note that at least Unicode 7.0 support is required for the default
-#'   symbols `\U1F805` and `\U1F807` to be correctly displayed.
+#'   be used for backlinks below `position`, the second one for backlinks above `position`.
 #' @param backlink_position Position of the backlinks. Possible values include:
 #'   - `"before"`: Before the actual header text.
 #'   - `"after"`: After the actual header text.

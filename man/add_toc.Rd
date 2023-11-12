@@ -66,8 +66,7 @@ fallback the backlinks point to the next header line above \code{position} (if a
 \code{title_tier} is set to a non-header value (\code{"regular"}, \code{"bold"} or \code{"italic"}) because GitLab currently ignores manually set HTML \verb{<id>} attributes.}
 
 \item{backlink_strings}{String(s) to use as link text back to the TOC. A character vector of length 1 or 2. If two strings are provided, the first one will
-be used for backlinks below \code{position}, the second one for backlinks above \code{position}. Note that at least Unicode 7.0 support is required for the default
-symbols \verb{\\U1F805} and \verb{\\U1F807} to be correctly displayed.}
+be used for backlinks below \code{position}, the second one for backlinks above \code{position}.}
 
 \item{backlink_position}{Position of the backlinks. Possible values include:
 \itemize{
