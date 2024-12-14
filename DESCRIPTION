@@ -19,7 +19,7 @@ License: AGPL (>= 3)
 URL: https://tocr.rpkg.dev, https://gitlab.com/rpkg.dev/tocr
 BugReports: https://gitlab.com/rpkg.dev/tocr/issues
 Depends:
-    R (>= 4.1)
+    R (>= 4.4)
 Imports:
     checkmate (>= 1.8.5),
     curl (>= 4.3),
@@ -45,4 +45,4 @@ Remotes:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2.9000
