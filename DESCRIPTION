@@ -5,7 +5,7 @@ Authors@R:
     person(given = "Salim",
            family = "Brüggemann",
            role = c("aut", "cre"),
-           email = "salim-b@pm.me",
+           email = "salim@rpkg.dev",
            comment = c(ORCID = "0000-0002-5329-5987"))
 Description: tocr allows to automatically add/update/remove
     a table of contents (TOC) to/from an (R) Markdown document. Internal
@@ -17,7 +17,7 @@ Description: tocr allows to automatically add/update/remove
     similar auto-generated TOC formats to its own one.
 License: AGPL (>= 3)
 URL: https://tocr.rpkg.dev, https://gitlab.com/rpkg.dev/tocr
-BugReports: https://gitlab.com/rpkg.dev/tocr/issues
+BugReports: https://gitlab.com/rpkg.dev/tocr/-/issues
 Depends:
     R (>= 4.4)
 Imports:
